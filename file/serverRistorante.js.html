@@ -1,0 +1,62 @@
+<html>
+<head>
+<title>serverRistorante.js</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6a8759;}
+.s3 { color: #808080;}
+.s4 { color: #6897bb;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+serverRistorante.js</font>
+</center></td></tr></table>
+<pre><span class="s0">const </span><span class="s1">express = require(</span><span class="s2">'express'</span><span class="s1">)</span><span class="s0">;</span>
+<span class="s0">const </span><span class="s1">app = express()</span><span class="s0">;</span>
+<span class="s0">const </span><span class="s1">bodyParser= require(</span><span class="s2">'body-parser'</span><span class="s1">)</span>
+<span class="s0">const </span><span class="s1">{MongoClient</span><span class="s0">, </span><span class="s1">ObjectId} = require(</span><span class="s2">'mongodb'</span><span class="s1">)</span><span class="s0">;</span>
+<span class="s0">const </span><span class="s1">dbURI =</span><span class="s2">'mongodb+srv://mario:mdb-123@proggettotecnologieweb.swsth.mongodb.net/prova?retryWrites=true&amp;w=majority'</span>
+<span class="s0">const </span><span class="s1">mongoClient = </span><span class="s0">new </span><span class="s1">MongoClient(dbURI)</span><span class="s0">;</span>
+<span class="s0">let </span><span class="s1">RistoranteDB</span><span class="s0">, </span><span class="s1">articoliCollection</span><span class="s0">;</span><span class="s3">//inserire nome database</span>
+
+<span class="s3">//CREAZIONE DEL SERVER E DELLA PORTA</span>
+<span class="s1">app.listen(</span><span class="s4">8000</span><span class="s0">, function</span><span class="s1">() {</span>
+    <span class="s1">console.log(</span><span class="s2">'ascolto sul server 8000'</span><span class="s1">)</span>
+<span class="s1">})</span>
+
+<span class="s3">//inseriamo il database e connettiamoci ad database</span>
+<span class="s1">async </span><span class="s0">function </span><span class="s1">run(){</span>
+    <span class="s0">await </span><span class="s1">mongoClient.connect()</span><span class="s0">;</span>
+    <span class="s1">console.log(</span><span class="s2">'Siamo connessi'</span><span class="s1">)</span><span class="s0">;</span>
+    <span class="s1">app.listen(</span><span class="s4">7000</span><span class="s0">, </span><span class="s1">() =&gt; console.log(</span><span class="s2">'Database connesso alla porta 7000...'</span><span class="s1">))</span><span class="s0">;</span>
+    <span class="s1">RistoranteDB = mongoClient.db(</span><span class="s2">'Ristorante'</span><span class="s1">)</span><span class="s0">;</span><span class="s3">//TITOLO DEL DATABASE</span>
+    <span class="s1">articoliCollection = RistoranteDB.collection(</span><span class="s2">'Ristorante'</span><span class="s1">)</span><span class="s0">;</span><span class="s3">//SOTTOGRUPPO</span>
+<span class="s1">}</span>
+<span class="s1">run().catch(err =&gt; console.log(</span><span class="s2">'Errore di connessione' </span><span class="s1">+ err))</span><span class="s0">;</span>
+<span class="s1">app.use(bodyParser.urlencoded({extended: </span><span class="s0">true</span><span class="s1">}))</span>
+
+
+
+<span class="s3">//RICHIAMA IL FILE HTML</span>
+<span class="s1">app.get(</span><span class="s2">'/'</span><span class="s0">, </span><span class="s1">(req</span><span class="s0">, </span><span class="s1">res) =&gt; {</span>
+    <span class="s1">res.sendFile(__dirname + </span><span class="s2">'/Ristorante.html'</span><span class="s1">)</span>
+<span class="s1">})</span>
+
+<span class="s1">app.use(express.static(</span><span class="s2">'public'</span><span class="s1">))</span><span class="s0">;</span>
+
+<span class="s3">//ricevere le informazioni E CREA</span>
+<span class="s1">app.post(</span><span class="s2">'/quotes'</span><span class="s0">, </span><span class="s1">(req</span><span class="s0">, </span><span class="s1">res) =&gt; {</span>
+    <span class="s1">articoliCollection.insertOne(req.body)</span>
+        <span class="s1">.then(result =&gt; {</span>
+            <span class="s1">res.redirect(</span><span class="s2">'/'</span><span class="s1">)</span>
+            <span class="s1">console.log(result)</span>
+        <span class="s1">})</span>
+        <span class="s1">.catch(error =&gt; console.error(error))</span>
+<span class="s1">})</span></pre>
+</body>
+</html>
